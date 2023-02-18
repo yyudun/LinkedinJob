@@ -107,3 +107,27 @@ scraping <-function(url, kriterler) {
   }
   return(kriterler)
 }
+
+#scraping ----
+kriterler <- scraping(job_links$job_links, kriterler)
+
+#making criteria different columns
+kriterler <- kriterler %>%
+  mutate(criteria = str_replace_all(criteria, "\n", " ")) %>%
+  mutate(Kidem = str_extract(criteria, pattern = "(?<=düzeyi ).*(?=İstihdam)")) %>%
+  mutate(Istihdam = str_extract(criteria, pattern = "(?<=türü).*(?=Görev)")) %>% 
+  mutate(Gorev = str_extract(criteria, pattern = "(?<=tanımı).*(?=Sektör)")) %>% 
+  mutate(Sektor = str_extract(criteria, pattern = '(?<=Sektörler).*')) %>%
+  mutate(Istihdam = ifelse(is.na(Istihdam), str_extract(criteria, "(?<=türü).*"), Istihdam)) %>%
+  distinct(explanation, .keep_all = TRUE)
+
+
+kriterler$work_ex <- NA
+
+jobRequirements <- kriterler %>%
+  filter(Kidem == 'Başlangıç Seviye ')
+
+#save ----
+write_csv(job_links, sprintf("links-%s.csv", lubridate::today()))
+write_csv(kriterler, sprintf("kriterler-%s.csv", lubridate::today()))
+write_csv(jobRequirements, sprintf("jobRequirements-%s.csv", lubridate::today()))
