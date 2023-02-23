@@ -100,10 +100,9 @@ getCriteria <- function(link, kriterler){
 
 scraping <-function(url, kriterler) {
   i <- 1
-  while(length(url) != i){
-    link = url[i]
-    kriterler <- getCriteria(link, kriterler)
-    i <- i + 1
+  while(length(url) > i){
+    i <- (length(kriterler$criteria) + 1)
+    kriterler <- getCriteria(url[i], kriterler)
   }
   return(kriterler)
 }
